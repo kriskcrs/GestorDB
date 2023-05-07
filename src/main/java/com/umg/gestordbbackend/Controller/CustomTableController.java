@@ -14,7 +14,7 @@ public class CustomTableController {
 
     @Autowired
     private CustomTableRepository customTableRepository;
-
+ //cristian
     @PostMapping
     public void createTable(@RequestParam("tableName") String tableName) {
         CustomTableService.createTable(tableName);
