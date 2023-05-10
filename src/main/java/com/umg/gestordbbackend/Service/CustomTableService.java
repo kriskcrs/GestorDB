@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.Query;
-
 @RestController
 @CrossOrigin
 @RequestMapping("/custom-table")
@@ -19,7 +17,7 @@ public class CustomTableService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-
+    //Autor Cristian Cáceres
     @PostMapping
     public String createTable(@RequestBody CustomEntity table) {
         try {
