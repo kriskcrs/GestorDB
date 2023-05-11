@@ -4,6 +4,7 @@ import com.umg.gestordbbackend.Entity.CustomEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,9 +20,25 @@ public class CustomTableService {
 
     private String sentencia;
     private String expresion;
+    private String mensaje;
 
     //Autor Cristian Cáceres
+
     @PostMapping
+    public String DDLTable(@RequestBody CustomEntity tabla) {
+        String myString = tabla.getSentencia().toUpperCase();
+        char firstChar = myString.charAt(0);
+
+        if (firstChar == 'C') {
+            return createTable(tabla);
+        } else if (firstChar == 'D') {
+            return DeleteTable(tabla);
+        } else {
+            mensaje = "No aplica a esta operacion";
+            return mensaje;
+        }
+    }
+
     public String createTable(@RequestBody CustomEntity table) {
         sentencia = table.getSentencia();
         expresion = "create table [a-z0-9]+ \\((([a-z]+ (int|(varchar\\([0-9]+\\)))),?)+\\);";
@@ -38,8 +55,6 @@ public class CustomTableService {
         return "1 Hubo un problema, tabla no creada";
     }
 
-
-    @PostMapping(path = "/delete")
     public String DeleteTable(@RequestBody CustomEntity table) {
         sentencia = table.getSentencia();
         expresion = "drop table \\w+;";
@@ -56,13 +71,10 @@ public class CustomTableService {
         return "1 Tabla no pudo ser eliminada";
     }
 
-
-
     public boolean validarExpresionRegular(String texto, String expresionRegular) {
         Pattern patron = Pattern.compile(expresionRegular);
         Matcher matcher = patron.matcher(texto);
         return cumple = matcher.matches();
     }
-
 
 }
