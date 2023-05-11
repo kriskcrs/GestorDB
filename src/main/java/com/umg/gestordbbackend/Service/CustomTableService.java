@@ -32,7 +32,8 @@ public class CustomTableService {
         String myString = tabla.getSentencia().toUpperCase();
         String firstTwoChars = myString.substring(0, 2);
 
-        return generalQry(tabla);
+        //return generalQry(tabla);
+        return general(tabla);
     }
 
     public String general(@RequestBody CustomEntity table) {
