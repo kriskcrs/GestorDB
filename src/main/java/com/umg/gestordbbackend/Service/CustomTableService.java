@@ -13,16 +13,16 @@ import java.util.regex.Pattern;
 @RequestMapping("/custom-table")
 public class CustomTableService {
 
-    public boolean cumple = false;
+    //Autor Cristian Cáceres
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
+    public boolean cumple = false;
     private String sentencia;
     private String expresion;
     private String mensaje;
 
-    //Autor Cristian Cáceres
+
 
     @PostMapping
     public String DDLTable(@RequestBody CustomEntity tabla) {
@@ -43,6 +43,7 @@ public class CustomTableService {
         sentencia = table.getSentencia();
         expresion = "create table [a-z0-9]+ \\((([a-z]+ (int|(varchar\\([0-9]+\\)))),?)+\\);";
         validarExpresionRegular(sentencia, expresion);
+
         if (cumple) {
             try {
                 jdbcTemplate.execute(sentencia);
@@ -52,6 +53,7 @@ public class CustomTableService {
                 System.out.println("Exception -> " + e.getMessage());
             }
         }
+        System.out.println("Cumple la condicion -> " + cumple);
         return "1 Hubo un problema, tabla no creada";
     }
 
@@ -68,6 +70,7 @@ public class CustomTableService {
                 System.out.println("Exception -> " + e.getMessage());
             }
         }
+        System.out.println("Cumple la condicion -> " + cumple);
         return "1 Tabla no pudo ser eliminada";
     }
 
