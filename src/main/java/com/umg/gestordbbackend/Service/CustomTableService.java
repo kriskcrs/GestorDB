@@ -34,44 +34,47 @@ public class CustomTableService {
         } else if (firstChar == 'D') {
             return DeleteTable(tabla);
         } else {
-            mensaje = "No aplica a esta operacion";
+            mensaje = "1 Sentencia no es DDL";
             return mensaje;
         }
     }
 
     public String createTable(@RequestBody CustomEntity table) {
-        sentencia = table.getSentencia();
-        expresion = "create table [a-z0-9]+ \\((([a-z]+ (int|(varchar\\([0-9]+\\)))),?)+\\);";
+        sentencia = table.getSentencia().toUpperCase();
+        System.out.println(sentencia);
+        expresion = "CREATE TABLE [A-Z0-9]+ \\((([A-Z0-9]+ (INT|(VARCHAR\\([0-9]+\\)))),?)+\\);";
         validarExpresionRegular(sentencia, expresion);
 
         if (cumple) {
             try {
                 jdbcTemplate.execute(sentencia);
-                return "0 Exito en la creacion de la tabla";
+                return "0 Exito se crea \n" + sentencia;
             } catch (Exception e) {
                 System.out.println("Causa -> " + e.getCause());
                 System.out.println("Exception -> " + e.getMessage());
+            return "1 Error -> " + e.getCause();
             }
         }
         System.out.println("Cumple la condicion -> " + cumple);
-        return "1 Hubo un problema, tabla no creada";
+        return "1 Sintaxys erronea -> " + sentencia;
     }
 
     public String DeleteTable(@RequestBody CustomEntity table) {
-        sentencia = table.getSentencia();
-        expresion = "drop table \\w+;";
+        sentencia = table.getSentencia().toUpperCase();
+        expresion = "DROP TABLE \\w+;";
         validarExpresionRegular(sentencia, expresion);
         if (cumple) {
             try {
                 jdbcTemplate.execute(sentencia);
-                return "0 Tabla eliminada";
+                return "0 Se Elimina -> " + sentencia;
             } catch (Exception e) {
                 System.out.println("Causa -> " + e.getCause());
                 System.out.println("Exception -> " + e.getMessage());
+                return "1 Error -> " + e.getCause();
             }
         }
         System.out.println("Cumple la condicion -> " + cumple);
-        return "1 Tabla no pudo ser eliminada";
+        return "1 Sintaxys erronea -> " + sentencia;
     }
 
     public boolean validarExpresionRegular(String texto, String expresionRegular) {
