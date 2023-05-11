@@ -9,7 +9,7 @@ public class CustomEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    private String nombre;
+    String sentencia;
 
     public Long getId() {
         return id;
@@ -19,12 +19,11 @@ public class CustomEntity {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getSentencia() {
+        return sentencia;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setSentencia(String sentencia) {
+        this.sentencia = sentencia;
     }
-
 }
