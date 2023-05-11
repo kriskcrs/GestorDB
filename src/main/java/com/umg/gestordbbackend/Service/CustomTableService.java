@@ -15,13 +15,12 @@ public class CustomTableService {
 
     //Autor Cristian Cáceres
 
+    public boolean cumple = false;
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    public boolean cumple = false;
-    private String sentencia;
-    private String expresion;
-    private String mensaje;
-
+    private String sentence;
+    private String expression, expressionDrop, expressionAlter;
+    private String message;
 
 
     @PostMapping
@@ -30,43 +29,27 @@ public class CustomTableService {
         char firstChar = myString.charAt(0);
 
         if (firstChar == 'C') {
-            return createTable(tabla);
+            return CreateTable(tabla);
         } else if (firstChar == 'D') {
             return DeleteTable(tabla);
+        } else if (firstChar == 'A') {
+            return AlterTable(tabla);
         } else {
-            mensaje = "1 Sentencia no es DDL";
-            return mensaje;
+            message = "1 Sentencia no es DDL";
+            return message;
         }
     }
 
-    public String createTable(@RequestBody CustomEntity table) {
-        sentencia = table.getSentencia().toUpperCase();
-        System.out.println(sentencia);
-        expresion = "CREATE TABLE [A-Z0-9]+ \\((([A-Z0-9]+ (INT|(VARCHAR\\([0-9]+\\)))),?)+\\);";
-        validarExpresionRegular(sentencia, expresion);
+    public String CreateTable(@RequestBody CustomEntity table) {
+        sentence = table.getSentencia().toUpperCase();
+        System.out.println(sentence);
+        expression = "CREATE TABLE [A-Z0-9]+ \\((([A-Z0-9]+ (INT|(VARCHAR\\([0-9]+\\)))),?)+\\);";
+        validateRegularExpression(sentence, expression);
 
         if (cumple) {
             try {
-                jdbcTemplate.execute(sentencia);
-                return "0 Exito se crea \n" + sentencia;
-            } catch (Exception e) {
-                System.out.println("Causa -> " + e.getCause());
-                System.out.println("Exception -> " + e.getMessage());
-            return "1 Error -> " + e.getCause();
-            }
-        }
-        System.out.println("Cumple la condicion -> " + cumple);
-        return "1 Sintaxys erronea -> " + sentencia;
-    }
-
-    public String DeleteTable(@RequestBody CustomEntity table) {
-        sentencia = table.getSentencia().toUpperCase();
-        expresion = "DROP TABLE \\w+;";
-        validarExpresionRegular(sentencia, expresion);
-        if (cumple) {
-            try {
-                jdbcTemplate.execute(sentencia);
-                return "0 Se Elimina -> " + sentencia;
+                jdbcTemplate.execute(sentence);
+                return "0 Exito se crea \n" + sentence;
             } catch (Exception e) {
                 System.out.println("Causa -> " + e.getCause());
                 System.out.println("Exception -> " + e.getMessage());
@@ -74,10 +57,69 @@ public class CustomTableService {
             }
         }
         System.out.println("Cumple la condicion -> " + cumple);
-        return "1 Sintaxys erronea -> " + sentencia;
+        return "1 Sintaxys erronea -> " + sentence;
     }
 
-    public boolean validarExpresionRegular(String texto, String expresionRegular) {
+    public String DeleteTable(@RequestBody CustomEntity table) {
+        sentence = table.getSentencia().toUpperCase();
+        expression = "DROP TABLE \\w+;";
+        validateRegularExpression(sentence, expression);
+        if (cumple) {
+            try {
+                jdbcTemplate.execute(sentence);
+                return "0 Se Elimina -> " + sentence;
+            } catch (Exception e) {
+                System.out.println("Causa -> " + e.getCause());
+                System.out.println("Exception -> " + e.getMessage());
+                return "1 Error -> " + e.getCause();
+            }
+        }
+
+        return "1 Sintaxys erronea -> " + sentence;
+    }
+
+    public String AlterTable(@RequestBody CustomEntity table) {
+        sentence = table.getSentencia().toUpperCase();
+        System.out.println(sentence);
+        expression = "ALTER TABLE \\w+ ADD COLUMN \\w+ (INT|VARCHAR\\([0-9]+\\))\\s*?;";
+        expressionDrop = "ALTER TABLE \\w+ DROP COLUMN \\w+\\s*?;";
+        expressionAlter = "ALTER TABLE \\w+ MODIFY COLUMN \\w+ (INT|VARCHAR\\([0-9]+\\))\\s*;";
+
+        validateRegularExpression(sentence, expression);
+        if (cumple) {
+            try {
+                jdbcTemplate.execute(sentence);
+                return "0 Exito se altera \n" + sentence;
+            } catch (Exception e) {
+                System.out.println("Causa -> " + e.getCause());
+                System.out.println("Exception -> " + e.getMessage());
+                return "1 Error -> " + e.getCause();
+            }
+
+        } else if (validateRegularExpression(sentence, expressionDrop)) {
+            try {
+                jdbcTemplate.execute(sentence);
+                return "0 Exito se altera \n" + sentence;
+            } catch (Exception e) {
+                System.out.println("Causa -> " + e.getCause());
+                System.out.println("Exception -> " + e.getMessage());
+                return "1 Error -> " + e.getCause();
+            }
+        } else if (validateRegularExpression(sentence, expressionAlter)) {
+
+            try {
+                jdbcTemplate.execute(sentence);
+                return "0 Exito se altera \n" + sentence;
+            } catch (Exception e) {
+                System.out.println("Causa -> " + e.getCause());
+                System.out.println("Exception -> " + e.getMessage());
+                return "1 Error -> " + e.getCause();
+            }
+        }
+        return "1 Sintaxys erronea -> " + sentence;
+    }
+
+    public boolean validateRegularExpression(String texto, String expresionRegular) {
         Pattern patron = Pattern.compile(expresionRegular);
         Matcher matcher = patron.matcher(texto);
         return cumple = matcher.matches();
