@@ -27,7 +27,7 @@ public class CustomTableService {
 
     @PostMapping
     public String DDLTable(@RequestBody CustomEntity tabla) {
-        String myString = tabla.getSentencia().toUpperCase();
+        String myString = tabla.getSentencia();
         String firstTwoChars = myString.substring(0, 2);
         if (firstTwoChars.equals("SE")) {
             return generalQry(tabla);
@@ -36,7 +36,7 @@ public class CustomTableService {
     }
 
     public String general(@RequestBody CustomEntity table) {
-        sentence = table.getSentencia().toUpperCase();
+        sentence = table.getSentencia();
         try {
             jdbcTemplate.execute(sentence);
             return "Sentencia ejecutada -> " + sentence;
@@ -47,7 +47,7 @@ public class CustomTableService {
     }
 
     public String generalQry(@RequestBody CustomEntity table) {
-        sentence = table.getSentencia().toUpperCase();
+        sentence = table.getSentencia();
         List<ObjectNode> rows = new ArrayList<>();
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sentence);
