@@ -27,6 +27,8 @@ public class CustomTableService {
 
     @PostMapping
     public String DDLTable(@RequestBody CustomEntity tabla) {
+        System.out.println(tabla.getSentencia());
+
         String myString = tabla.getSentencia();
         String firstChars = myString.substring(0,1);
 
