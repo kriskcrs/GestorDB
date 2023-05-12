@@ -46,13 +46,10 @@ public class CustomTableService {
         }
     }
 
-
     public String generalQry(@RequestBody CustomEntity table) {
         sentence = table.getSentencia().toUpperCase();
         List<ObjectNode> rows = new ArrayList<>();
         try {
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbOS2", "root", "cristian13");
-            Statement stmt = conn.createStatement();
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sentence);
             ResultSet rs = ((ResultSetWrappingSqlRowSet) rowSet).getResultSet();
             ResultSetMetaData metadata = rs.getMetaData();
@@ -69,8 +66,7 @@ public class CustomTableService {
             }
             String json = new ObjectMapper().writeValueAsString(rows);
             System.out.println(json);
-            stmt.close();
-            conn.close();
+
             return json;
         } catch (Exception e) {
             return "Sentencia no ejecutada causa -> " + e.getCause();
