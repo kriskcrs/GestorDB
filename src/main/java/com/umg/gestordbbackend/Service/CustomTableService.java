@@ -28,10 +28,13 @@ public class CustomTableService {
     @PostMapping
     public String DDLTable(@RequestBody CustomEntity tabla) {
         String myString = tabla.getSentencia();
-        String firstTwoChars = myString.substring(0, 2);
-        if (firstTwoChars.equals("SE")) {
+        String firstChars = myString.substring(0,1);
+
+        if (firstChars.equals("S") || firstChars.equals("s") ) {
+            System.out.println("entro en consulta -> ");
             return generalQry(tabla);
         }
+        System.out.println("entro en modo no consulta -> ");
         return general(tabla);
     }
 
@@ -48,6 +51,7 @@ public class CustomTableService {
 
     public String generalQry(@RequestBody CustomEntity table) {
         sentence = table.getSentencia();
+        System.out.println(sentence);
         List<ObjectNode> rows = new ArrayList<>();
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sentence);
