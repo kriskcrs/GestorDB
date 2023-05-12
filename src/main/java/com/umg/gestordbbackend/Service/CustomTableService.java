@@ -24,20 +24,26 @@ public class CustomTableService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private String sentence;
+    private String mensaje;
 
     @PostMapping
     public String DDLTable(@RequestBody CustomEntity tabla) {
-        System.out.println(tabla.getSentencia());
 
-        String myString = tabla.getSentencia();
-        String firstChars = myString.substring(0,1);
-
-        if (firstChars.equals("S") || firstChars.equals("s") ) {
-            System.out.println("entro en consulta -> ");
-            return generalQry(tabla);
+        try{
+            String myString = tabla.getSentencia();
+            String firstChars = myString.substring(0,1);
+            if (firstChars.equals("S") || firstChars.equals("s") ) {
+                System.out.println("entro en consulta -> ");
+                return generalQry(tabla);
+            }
+            System.out.println("entro en modo no consulta -> ");
+            return general(tabla);
+        }catch (Exception e){
+            mensaje = String.valueOf(e.getCause());
+            System.out.println(e.getCause());
         }
-        System.out.println("entro en modo no consulta -> ");
-        return general(tabla);
+            return "Tu sentencia es -> " + mensaje ;
+
     }
 
     public String general(@RequestBody CustomEntity table) {
