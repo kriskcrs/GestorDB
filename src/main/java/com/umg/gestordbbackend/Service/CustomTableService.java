@@ -3,15 +3,16 @@ package com.umg.gestordbbackend.Service;
 import com.umg.gestordbbackend.Entity.CustomEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RestController
 @CrossOrigin
@@ -20,19 +21,17 @@ public class CustomTableService {
 
     //Autor Cristian Cáceres
 
-    public boolean cumple = false;
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private String sentence;
-    private String expression, expressionDrop, expressionAlter;
-    private String message;
 
     @PostMapping
     public String DDLTable(@RequestBody CustomEntity tabla) {
         String myString = tabla.getSentencia().toUpperCase();
         String firstTwoChars = myString.substring(0, 2);
-
-        //return generalQry(tabla);
+        if (firstTwoChars.equals("SE")) {
+            return generalQry(tabla);
+        }
         return general(tabla);
     }
 
@@ -40,49 +39,41 @@ public class CustomTableService {
         sentence = table.getSentencia().toUpperCase();
         try {
             jdbcTemplate.execute(sentence);
-            return "0 Exito sentencia \n" + sentence;
+            return "Sentencia ejecutada -> " + sentence;
         } catch (Exception e) {
             System.out.println("Causa -> " + e.getCause());
-            System.out.println("Exception -> " + e.getMessage());
-            return "1 Error -> " + e.getCause();
+            return "Sentencia no ejecutada causa -> " + e.getCause();
         }
     }
 
+
     public String generalQry(@RequestBody CustomEntity table) {
         sentence = table.getSentencia().toUpperCase();
+        List<ObjectNode> rows = new ArrayList<>();
         try {
-
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbOS2", "root", "cristian13");
-
-            // Crear objeto Statement y ejecutar consulta
             Statement stmt = conn.createStatement();
-            // ResultSet rs = stmt.executeQuery(sentence);
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sentence);
-
-            // ResultSet rs = (ResultSet) jdbcTemplate.queryForRowSet(sentence);
-            System.out.println(rowSet);
-
-            while (rowSet.next()) {
-                String nombre = rowSet.getString("nombre");
-                System.out.println(nombre);
-                String dpi = rowSet.getString("dpi");
-                System.out.println(dpi);
-                // hacer algo con el nombre de la persona
+            ResultSet rs = ((ResultSetWrappingSqlRowSet) rowSet).getResultSet();
+            ResultSetMetaData metadata = rs.getMetaData();
+            int columnCount = metadata.getColumnCount();
+            while (rs.next()) {
+                ObjectNode row = new ObjectMapper().createObjectNode();
+                for (int i = 1; i <= columnCount; i++) {
+                    String columnValue = rs.getString(i);
+                    String columnName = metadata.getColumnName(i);
+                    columnValue = columnValue.replaceAll("[áäàâ]", "a").replaceAll("[éëèê]", "e").replaceAll("[íïìî]", "i").replaceAll("[óöòô]", "o").replaceAll("[úüùû]", "u").replaceAll("\\?", " ");
+                    row.put(columnName, columnValue);
+                }
+                rows.add(row);
             }
-
-
-
-            // Cerrar ResultSet, Statement y Connection
-
+            String json = new ObjectMapper().writeValueAsString(rows);
+            System.out.println(json);
             stmt.close();
             conn.close();
-
-
-            return "0 Exito sentencia \n";
+            return json;
         } catch (Exception e) {
-            System.out.println("Causa -> " + e.getCause());
-            System.out.println("Exception -> " + e.getMessage());
-            return "1 Error -> " + e.getCause();
+            return "Sentencia no ejecutada causa -> " + e.getCause();
         }
     }
 
