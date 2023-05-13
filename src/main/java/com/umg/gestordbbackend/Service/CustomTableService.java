@@ -1,5 +1,6 @@
 package com.umg.gestordbbackend.Service;
 
+import com.umg.gestordbbackend.Entity.ConnectionDB;
 import com.umg.gestordbbackend.Entity.CustomEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,19 +17,19 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/custom-table")
+@RequestMapping("/")
 public class CustomTableService {
 
     //Autor Cristian Cáceres
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
     private String sentence;
     private String mensaje;
 
-    @PostMapping
+   // @PostMapping("/custom-table")
     public String DDLTable(@RequestBody CustomEntity tabla) {
-
+        System.out.println("ingreso " + tabla.getSentencia());
         try{
             String myString = tabla.getSentencia();
             String firstChars = myString.substring(0,1);
@@ -40,7 +41,6 @@ public class CustomTableService {
             return general(tabla);
         }catch (Exception e){
             mensaje = String.valueOf(e.getCause());
-            System.out.println(e.getCause());
         }
             return "Tu sentencia es -> " + mensaje ;
 
@@ -85,4 +85,29 @@ public class CustomTableService {
         }
     }
 
+
+    @PostMapping("/connect-db")
+    public String connectToDatabase(@RequestBody ConnectionDB connectionData) {
+        String url = connectionData.getUrl();
+        String username = connectionData.getUsername();
+        String password = connectionData.getPassword();
+        String setencia = connectionData.getSetencia();
+        try {
+            // Create the DriverManager
+            //Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            // Create the Connection
+            Connection conn = DriverManager.getConnection(url, username, password);
+            // Use the Connection to query the database
+            Statement stmt = conn.createStatement();
+            CustomEntity customEntity = new CustomEntity();
+            customEntity.setSentencia(setencia);
+            mensaje = DDLTable(customEntity);
+            // Close the Connection
+            conn.close();
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+        return mensaje;
+    }
 }
