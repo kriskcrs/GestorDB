@@ -27,7 +27,7 @@ public class CustomTableService {
     private String sentence;
     private String mensaje;
 
-   // @PostMapping("/custom-table")
+    @PostMapping("/custom-table")
     public String DDLTable(@RequestBody CustomEntity tabla) {
         System.out.println("ingreso " + tabla.getSentencia());
         try{
