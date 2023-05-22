@@ -29,20 +29,29 @@ public class CustomTableService {
 
     @PostMapping("/custom-table")
     public String DDLTable(@RequestBody CustomEntity tabla) {
-        System.out.println("ingreso " + tabla.getSentencia());
+        System.out.println("Se recibe " + tabla.getSentencia());
         try{
             String myString = tabla.getSentencia();
-            String firstChars = myString.substring(0,1);
-            if (firstChars.equals("S") || firstChars.equals("s") ) {
-                System.out.println("entro en consulta -> ");
-                return generalQry(tabla);
+            if(myString.length()>=6){
+                String firstChars = myString.substring(0,6);
+                System.out.println(firstChars);
+
+                if (firstChars.equals("SELECT") || firstChars.equals("select") ) {
+                    System.out.println("entro en dql -> ");
+                    return generalQry(tabla);
+                }
+                System.out.println("entro en dml o ddl -> ");
+                return general(tabla);
+            }else{
+                return "Response -> java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax;" +
+                        " check the manual that corresponds to your MySQL server version for the right syntax to use near '" + myString + "' at line 1";
             }
-            System.out.println("entro en modo no consulta -> ");
-            return general(tabla);
+
         }catch (Exception e){
             mensaje = String.valueOf(e.getCause());
+            System.out.println(e.getMessage());
         }
-            return "Tu sentencia es -> " + mensaje ;
+            return "Response -> " + mensaje ;
 
     }
 
@@ -50,10 +59,10 @@ public class CustomTableService {
         sentence = table.getSentencia();
         try {
             jdbcTemplate.execute(sentence);
-            return "Sentencia ejecutada -> " + sentence;
+            return "Response -> " + sentence;
         } catch (Exception e) {
             System.out.println("Causa -> " + e.getCause());
-            return "Sentencia no ejecutada causa -> " + e.getCause();
+            return "Response -> " + e.getCause();
         }
     }
 
@@ -78,10 +87,9 @@ public class CustomTableService {
             }
             String json = new ObjectMapper().writeValueAsString(rows);
             System.out.println(json);
-
             return json;
         } catch (Exception e) {
-            return "Sentencia no ejecutada causa -> " + e.getCause();
+            return "Response -> " + e.getCause();
         }
     }
 
