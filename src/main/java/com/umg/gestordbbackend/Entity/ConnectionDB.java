@@ -3,17 +3,7 @@ package com.umg.gestordbbackend.Entity;
 public class ConnectionDB {
 
     private String url;
-    private String username;
-    private String password;
     private String sentencia;
-
-    public String getSentencia() {
-        return sentencia;
-    }
-
-    public void setSentencia(String sentencia) {
-        this.sentencia = sentencia;
-    }
 
     public String getUrl() {
         return url;
@@ -23,19 +13,11 @@ public class ConnectionDB {
         this.url = url;
     }
 
-    public String getUsername() {
-        return username;
+    public String getSentencia() {
+        return sentencia;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setSentencia(String sentencia) {
+        this.sentencia = sentencia;
     }
 }

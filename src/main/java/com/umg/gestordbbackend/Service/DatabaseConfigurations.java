@@ -1,13 +1,12 @@
 package com.umg.gestordbbackend.Service;
 
 import com.umg.gestordbbackend.Entity.ConnectionDB;
+import com.umg.gestordbbackend.Entity.UserDB;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,11 +16,12 @@ import java.util.Map;
 public class DatabaseConfigurations {
 
     @PostMapping("/connect-db")
-    public List<Map<String, Object>> connectToDatabase(@RequestBody ConnectionDB connectionData) {
-        String url = "jdbc:mysql://localhost:3306/"+ connectionData.getUrl()+"?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-        String username = connectionData.getUsername();
-        String password = connectionData.getPassword();
-        String sentencia = connectionData.getSentencia();
+    public List<Map<String, Object>> connectToDatabase(@RequestBody UserDB userDB) {
+
+        String url = "jdbc:mysql://localhost:3306/" + userDB.getUrl() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        String username = userDB.getUsername();
+        String password = userDB.getPassword();
+        String sentencia = userDB.getSentencia();
 
         List<Map<String, Object>> response = new ArrayList<>();
         try {
@@ -48,7 +48,7 @@ public class DatabaseConfigurations {
                 int result = stmt.getUpdateCount();
                 if (result >= 0) {
                     Map<String, Object> message = new HashMap<>();
-                    message.put("message", connectionData.getSentencia());
+                    message.put("message", userDB.getSentencia());
                     response.add(message);
                 } else {
                     Map<String, Object> message = new HashMap<>();
@@ -60,11 +60,34 @@ public class DatabaseConfigurations {
             conn.close();
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
-            System.out.println("Mensaje ->"+e.getMessage());
-            System.out.println("Causa -> "+e.getCause());
-            error.put("error","" + e.getMessage());
+            System.out.println("Mensaje ->" + e.getMessage());
+            System.out.println("Causa -> " + e.getCause());
+            error.put("error", "" + e.getMessage());
             response.add(error);
         }
         return response;
     }
+
+    @PostMapping("/check-db")
+    public Map<String, Object> checkDatabaseAccess(@RequestBody UserDB userDB) {
+        String url = "jdbc:mysql://localhost:3306/" + userDB.getUrl() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        String username = userDB.getUsername();
+        String password = userDB.getPassword();
+
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Create the DriverManager
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            // Create the Connection
+            Connection conn = DriverManager.getConnection(url, username, password);
+
+            response.put("message", "Conexión exitosa a la base de datos.");
+            // Close the Connection
+            conn.close();
+        } catch (Exception e) {
+            response.put("error", "Error: " + e.getMessage());
+        }
+        return response;
+    }
+
 }
