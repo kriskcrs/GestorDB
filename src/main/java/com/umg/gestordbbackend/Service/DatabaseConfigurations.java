@@ -1,6 +1,5 @@
 package com.umg.gestordbbackend.Service;
 
-import com.umg.gestordbbackend.Entity.ConnectionDB;
 import com.umg.gestordbbackend.Entity.UserDB;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,12 +16,10 @@ public class DatabaseConfigurations {
 
     @PostMapping("/connect-db")
     public List<Map<String, Object>> connectToDatabase(@RequestBody UserDB userDB) {
-
         String url = "jdbc:mysql://localhost:3306/" + userDB.getUrl() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String username = userDB.getUsername();
         String password = userDB.getPassword();
         String sentencia = userDB.getSentencia();
-
         List<Map<String, Object>> response = new ArrayList<>();
         try {
             //Crea el Administrador del Driver
@@ -76,13 +73,13 @@ public class DatabaseConfigurations {
 
         Map<String, Object> response = new HashMap<>();
         try {
-            // Create the DriverManager
+            //Crea el Administrador del Driver
             Class.forName("com.mysql.cj.jdbc.Driver");
-            // Create the Connection
+            // Crea la conexion
             Connection conn = DriverManager.getConnection(url, username, password);
 
             response.put("message", "Conexión exitosa a la base de datos.");
-            // Close the Connection
+            // Cierra la conexion
             conn.close();
         } catch (Exception e) {
             response.put("error", "Error: " + e.getMessage());
