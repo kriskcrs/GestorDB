@@ -7,11 +7,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.web.bind.annotation.*;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -29,30 +27,25 @@ public class CustomTableService {
 
     @PostMapping("/custom-table")
     public String DDLTable(@RequestBody CustomEntity tabla) {
-        System.out.println("Se recibe " + tabla.getSentencia());
-        try{
+        try {
             String myString = tabla.getSentencia();
-            if(myString.length()>=6){
-                String firstChars = myString.substring(0,6);
-                System.out.println(firstChars);
-
-                if (firstChars.equals("SELECT") || firstChars.equals("select") ) {
-                    System.out.println("entro en dql -> ");
+            if (myString.length() >= 6) {
+                String firstChars = myString.substring(0, 6);
+                if (firstChars.equalsIgnoreCase("SELECT")) {
+                    System.out.println("entro en dql -> " + myString);
                     return generalQry(tabla);
                 }
-                System.out.println("entro en dml o ddl -> ");
+                System.out.println("entro en dml o ddl -> " + myString);
                 return general(tabla);
-            }else{
+            } else {
                 return "Response -> java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax;" +
-                        " check the manual that corresponds to your MySQL server version for the right syntax to use near '" + myString + "' at line 1";
+                        " check the manual that corresponds to your MySQL server version for the right syntax to use near '" + myString + "' at line 1 personal";
             }
-
-        }catch (Exception e){
+        } catch (Exception e) {
             mensaje = String.valueOf(e.getCause());
             System.out.println(e.getMessage());
         }
-            return "Response -> " + mensaje ;
-
+        return "Response -> " + mensaje;
     }
 
     public String general(@RequestBody CustomEntity table) {
@@ -68,7 +61,6 @@ public class CustomTableService {
 
     public String generalQry(@RequestBody CustomEntity table) {
         sentence = table.getSentencia();
-        System.out.println(sentence);
         List<ObjectNode> rows = new ArrayList<>();
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sentence);
@@ -85,9 +77,7 @@ public class CustomTableService {
                 }
                 rows.add(row);
             }
-            String json = new ObjectMapper().writeValueAsString(rows);
-            System.out.println(json);
-            return json;
+            return new ObjectMapper().writeValueAsString(rows);
         } catch (Exception e) {
             return "Response -> " + e.getCause();
         }
