@@ -1,12 +1,9 @@
 package com.umg.gestordbbackend.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.umg.gestordbbackend.Entity.ConnectionDB;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -21,22 +18,22 @@ public class DatabaseConfigurations {
 
     @PostMapping("/connect-db")
     public List<Map<String, Object>> connectToDatabase(@RequestBody ConnectionDB connectionData) {
-        String url = connectionData.getUrl();
+        String url = "jdbc:mysql://localhost:3306/"+ connectionData.getUrl()+"?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String username = connectionData.getUsername();
         String password = connectionData.getPassword();
         String sentencia = connectionData.getSentencia();
+
         List<Map<String, Object>> response = new ArrayList<>();
         try {
-            // Create the DriverManager Crea
+            //Crea el Administrador del Driver
             Class.forName("com.mysql.cj.jdbc.Driver");
-            // Create the Connection
+            // Crea la conexion
             Connection conn = DriverManager.getConnection(url, username, password);
-            // Use the Connection to query the database
+            // usa la conexion para la consulta
             Statement stmt = conn.createStatement();
             boolean isQuery = stmt.execute(sentencia);
             if (isQuery) {
                 ResultSet rs = stmt.getResultSet();
-
                 int columnCount = rs.getMetaData().getColumnCount();
                 while (rs.next()) {
                     Map<String, Object> row = new HashMap<>();
@@ -48,8 +45,8 @@ public class DatabaseConfigurations {
                     response.add(row);
                 }
             } else {
-                int resultado = stmt.getUpdateCount();
-                if (resultado >= 0) {
+                int result = stmt.getUpdateCount();
+                if (result >= 0) {
                     Map<String, Object> message = new HashMap<>();
                     message.put("message", connectionData.getSentencia());
                     response.add(message);
@@ -59,7 +56,7 @@ public class DatabaseConfigurations {
                     response.add(message);
                 }
             }
-            // Close the Connection
+            // Cierra la conexion
             conn.close();
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
