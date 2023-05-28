@@ -5,14 +5,14 @@ public class ConnectionDB {
     private String url;
     private String username;
     private String password;
-    private String setencia;
+    private String sentencia;
 
-    public String getSetencia() {
-        return setencia;
+    public String getSentencia() {
+        return sentencia;
     }
 
-    public void setSetencia(String setencia) {
-        this.setencia = setencia;
+    public void setSentencia(String sentencia) {
+        this.sentencia = sentencia;
     }
 
     public String getUrl() {
