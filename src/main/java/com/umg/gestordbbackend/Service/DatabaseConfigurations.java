@@ -16,6 +16,11 @@ public class DatabaseConfigurations {
 
     @PostMapping("/connect-db")
     public List<Map<String, Object>> connectToDatabase(@RequestBody UserDB userDB) {
+        System.out.println("Url ->"+userDB.getUrl());
+        System.out.println("Usuario ->"+userDB.getUsername());
+        System.out.println("Contraseña ->"+userDB.getPassword());
+        System.out.println("Sentencia ->"+userDB.getSentencia());
+
         String url = "jdbc:mysql://localhost:3306/" + userDB.getUrl() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String username = userDB.getUsername();
         String password = userDB.getPassword();
