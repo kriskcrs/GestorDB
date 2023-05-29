@@ -74,6 +74,11 @@ public class DatabaseConfigurations {
 
     @PostMapping("/check-db")
     public Map<String, Object> checkDatabaseAccess(@RequestBody UserDB userDB) {
+        System.out.println("Url ->"+userDB.getUrl());
+        System.out.println("Usuario ->"+userDB.getUsername());
+        System.out.println("Contraseña ->"+userDB.getPassword());
+
+
         String url = "jdbc:mysql://localhost:3306/" + userDB.getUrl() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String username = userDB.getUsername();
         String password = userDB.getPassword();
