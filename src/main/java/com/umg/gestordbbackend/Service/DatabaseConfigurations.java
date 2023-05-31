@@ -14,19 +14,16 @@ import java.util.*;
 @CrossOrigin
 public class DatabaseConfigurations {
 
-    Map<String, Object> response = new HashMap<>();
     private String local = "localhost";
-    private String ipvirtual = "192.168.1.32";
-    private String ipfisica = "192.168.15";
-    private boolean valid = false;
+
 
     @PostMapping("/execute-db")
     public List<Map<String, Object>> connectToDatabase(@RequestBody UserDB userDB) {
 
-        String url = "jdbc:mysql://" + local + ":3306/" + userDB.getUrl() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        String url = "jdbc:mysql://"+local+":3306/" + userDB.getUrl() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String username = userDB.getUsername();
         String password = userDB.getPassword();
-        //String sentencia = userDB.getSentencia();
+
         List<Map<String, Object>> response = new ArrayList<>();
         List<String> sentencias = Arrays.asList(userDB.getSentencia().split(";"));
 
@@ -35,12 +32,12 @@ public class DatabaseConfigurations {
             Class.forName("com.mysql.cj.jdbc.Driver");
             // Crea la conexion
             Connection conn = DriverManager.getConnection(url, username, password);
-            System.out.println("valor de conn " + conn);
+            System.out.println("valor de conn "+conn);
             // usa la conexion para la consulta
             Statement stmt = conn.createStatement();
 
-            for (String senten : sentencias) {
-                if (!senten.trim().isEmpty()) {
+            for(String senten : sentencias){
+                if(!senten.trim().isEmpty()){
                     boolean isQuery = stmt.execute(senten);
                     if (isQuery) {
                         ResultSet rs = stmt.getResultSet();
@@ -87,19 +84,12 @@ public class DatabaseConfigurations {
     @PostMapping("/check-db")
     public Map<String, Object> checkDatabaseAccess(@RequestBody UserDB userDB) {
 
-        connection(userDB);
-        if (valid) {
-            connection2(userDB);
-        }
-        return response;
-    }
-
-    public Map<String, Object> connection2(UserDB userDB) {
-        String url = "jdbc:mysql://" + ipfisica + ":3306/" + userDB.getUrl() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        String url = "jdbc:mysql://"+local+":3306/" + userDB.getUrl() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 
         String username = userDB.getUsername();
         String password = userDB.getPassword();
 
+        Map<String, Object> response = new HashMap<>();
         try {
             //Crea el Administrador del Driver
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -107,36 +97,9 @@ public class DatabaseConfigurations {
             Connection conn = DriverManager.getConnection(url, username, password);
 
             response.put("message", "Conexión exitosa a la base de datos.");
-
             // Cierra la conexion
             conn.close();
         } catch (Exception e) {
-
-            response.put("error", "Error: " + e.getMessage());
-        }
-        return response;
-
-    }
-
-
-    public Map<String, Object> connection(UserDB userDB) {
-        String url = "jdbc:mysql://" + ipvirtual + ":3306/" + userDB.getUrl() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-
-        String username = userDB.getUsername();
-        String password = userDB.getPassword();
-
-        try {
-            //Crea el Administrador del Driver
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            // Crea la conexion
-            Connection conn = DriverManager.getConnection(url, username, password);
-
-            response.put("message", "Conexión exitosa a la base de datos.");
-
-            // Cierra la conexion
-            conn.close();
-        } catch (Exception e) {
-            valid = true;
             response.put("error", "Error: " + e.getMessage());
         }
         return response;
