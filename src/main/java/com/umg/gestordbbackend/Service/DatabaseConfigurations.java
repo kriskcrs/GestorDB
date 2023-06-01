@@ -24,7 +24,7 @@ public class DatabaseConfigurations {
         printLog(userDB);
         CollectorData(userDB);
         List<Map<String, Object>> response = new ArrayList<>();
-        List<String> sentencias = Arrays.asList(userDB.getSentencia().split(";"));
+        String[] sentencias = userDB.getSentencia().split(";");
 
         try {
             //Crea el Administrador del Driver
