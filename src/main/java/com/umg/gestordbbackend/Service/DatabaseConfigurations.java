@@ -13,9 +13,9 @@ import java.util.*;
 @CrossOrigin
 public class DatabaseConfigurations {
 
-    String username;
-    String password;
-    String url;
+    private String username;
+    private String password;
+    private String url;
     private String local = "localhost";
 
     @PostMapping("/execute-db")
