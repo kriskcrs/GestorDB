@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.sql.*;
 import java.util.*;
 
+
+//Autor Cristian Cáceres
 @RestController
 @CrossOrigin
 public class DatabaseConfigurations {
