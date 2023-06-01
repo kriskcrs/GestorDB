@@ -1,6 +1,5 @@
 package com.umg.gestordbbackend.Service;
 
-import com.umg.gestordbbackend.Entity.ConnectionDB;
 import com.umg.gestordbbackend.Entity.UserDB;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,16 +13,16 @@ import java.util.*;
 @CrossOrigin
 public class DatabaseConfigurations {
 
+    String username;
+    String password;
+    String url;
     private String local = "localhost";
-
 
     @PostMapping("/execute-db")
     public List<Map<String, Object>> connectToDatabase(@RequestBody UserDB userDB) {
 
-        String url = "jdbc:mysql://"+local+":3306/" + userDB.getUrl() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-        String username = userDB.getUsername();
-        String password = userDB.getPassword();
-
+        printLog(userDB);
+        CollectorData(userDB);
         List<Map<String, Object>> response = new ArrayList<>();
         List<String> sentencias = Arrays.asList(userDB.getSentencia().split(";"));
 
@@ -32,12 +31,11 @@ public class DatabaseConfigurations {
             Class.forName("com.mysql.cj.jdbc.Driver");
             // Crea la conexion
             Connection conn = DriverManager.getConnection(url, username, password);
-            System.out.println("valor de conn "+conn);
             // usa la conexion para la consulta
             Statement stmt = conn.createStatement();
 
-            for(String senten : sentencias){
-                if(!senten.trim().isEmpty()){
+            for (String senten : sentencias) {
+                if (!senten.trim().isEmpty()) {
                     boolean isQuery = stmt.execute(senten);
                     if (isQuery) {
                         ResultSet rs = stmt.getResultSet();
@@ -83,25 +81,32 @@ public class DatabaseConfigurations {
 
     @PostMapping("/check-db")
     public Map<String, Object> checkDatabaseAccess(@RequestBody UserDB userDB) {
-
-        String url = "jdbc:mysql://"+local+":3306/" + userDB.getUrl() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-
-        String username = userDB.getUsername();
-        String password = userDB.getPassword();
-
+        printLog(userDB);
+        CollectorData(userDB);
         Map<String, Object> response = new HashMap<>();
         try {
             //Crea el Administrador del Driver
             Class.forName("com.mysql.cj.jdbc.Driver");
             // Crea la conexion
             Connection conn = DriverManager.getConnection(url, username, password);
-
             response.put("message", "Conexión exitosa a la base de datos.");
             // Cierra la conexion
             conn.close();
         } catch (Exception e) {
-            response.put("error", "Error: " + e.getMessage());
+            response.put("error", "Error: " + e.getMessage()+"\n");
         }
         return response;
+    }
+
+    public void printLog(UserDB userDB) {
+        System.out.println("Setencia -> " + userDB.getSentencia());
+        System.out.println("usuario -> " + userDB.getUsername());
+        System.out.println("---------------------------------------------");
+    }
+
+    public void CollectorData(UserDB userDB) {
+        url = "jdbc:mysql://" + local + ":3306/" + userDB.getUrl() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        username = userDB.getUsername();
+        password = userDB.getPassword();
     }
 }
