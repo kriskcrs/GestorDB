@@ -55,11 +55,11 @@ public class DatabaseConfigurations {
                         int result = stmt.getUpdateCount();
                         if (result >= 0) {
                             Map<String, Object> message = new HashMap<>();
-                            message.put("message", userDB.getSentencia());
+                            message.put("Mensaje-> ", senten);
                             response.add(message);
                         } else {
                             Map<String, Object> message = new HashMap<>();
-                            message.put("message", "La sentencia no se pudo ejecutar.");
+                            message.put("Mensaje->", "La sentencia no se pudo ejecutar.");
                             response.add(message);
                         }
                     }
@@ -91,7 +91,7 @@ public class DatabaseConfigurations {
             Class.forName("com.mysql.cj.jdbc.Driver");
             // Crea la conexion
             Connection conn = DriverManager.getConnection(url, username, password);
-            response.put("message", "Conexión exitosa a la base de datos.");
+            response.put("Mensaje", "Conexión exitosa a la base de datos.");
             // Cierra la conexion
             conn.close();
         } catch (Exception e) {
