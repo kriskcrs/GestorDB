@@ -101,7 +101,7 @@ public class DatabaseConfigurations {
     }
 
     public void printLog(UserDB userDB) {
-        System.out.println("Setencia -> " + userDB.getSentencia());
+        System.out.println("Sentencia -> " + userDB.getSentencia());
         System.out.println("usuario -> " + userDB.getUsername());
         System.out.println("---------------------------------------------");
     }
